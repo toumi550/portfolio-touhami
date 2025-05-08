@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | TOUHAMI BARKAT - Développeur Full-Stack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap');
+        
+        :root {
+            --primary: #00f0ff;
+            --secondary: #ff00e6;
+            --dark: #0a0a14;
+            --darker: #05050a;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: white;
+            overflow-x: hidden;
+            min-width: 320px;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .gradient-border {
+            position: relative;
+        }
+        
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 0.5rem;
+            padding: 2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.3);
+        }
+        
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        input, textarea {
+            background-color: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+        }
+        
+        .scroll-indicator {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+        
+        @keyframes float {
+            0% {transform: translateY(0px);}
+            50% {transform: translateY(-20px);}
+            100% {transform: translateY(0px);}
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        #vanta-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .blob {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.2;
+            z-index: -1;
+        }
+        
+        .blob-1 {
+            top: 20%;
+            left: 10%;
+            animation: move 15s infinite alternate;
+        }
+        
+        .blob-2 {
+            bottom: 20%;
+            right: 10%;
+            animation: move 18s infinite alternate-reverse;
+        }
+        
+        @keyframes move {
+            0% {transform: translate(0, 0);}
+            25% {transform: translate(50px, 50px);}
+            50% {transform: translate(100px, -50px);}
+            75% {transform: translate(-50px, -50px);}
+            100% {transform: translate(-100px, 50px);}
+        }
+
+        /* New animations */
+        @keyframes pulse {
+            0% {transform: scale(1);}
+            50% {transform: scale(1.05);}
+            100% {transform: scale(1);}
+        }
+
+        @keyframes glow {
+            0% {box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);}
+            50% {box-shadow: 0 0 20px rgba(0, 240, 255, 0.8);}
+            100% {box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);}
+        }
+
+        @keyframes slideIn {
+            from {transform: translateX(-50px); opacity: 0;}
+            to {transform: translateX(0); opacity: 1;}
+        }
+
+        .pulse-animation {
+            animation: pulse 3s infinite;
+        }
+
+        .glow-animation {
+            animation: glow 3s infinite;
+        }
+
+        .slide-in {
+            animation: slideIn 1s ease-out forwards;
+        }
+
+        .tech-icon {
+            transition: all 0.3s ease;
+        }
+
+        .tech-icon:hover {
+            transform: scale(1.2) rotate(10deg);
+            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.8));
+        }
+
+        .project-card {
+            perspective: 1000px;
+        }
+
+        .project-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .project-card:hover .project-inner {
+            transform: rotateY(10deg) rotateX(5deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="vanta-bg"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-black bg-opacity-80 backdrop-filter backdrop-blur-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold gradient-text tracking-wider">TOUHAMI BARKAT</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link relative text-white hover:text-cyan-300 transition duration-300">Accueil</a>
+                    <a href="#about" class="nav-link relative text-white hover:text-cyan-300 transition duration-300">À propos</a>
+                    <a href="#skills" class="nav-link relative text-white hover:text-cyan-300 transition duration-300">Compétences</a>
+                    <a href="#projects" class="nav-link relative text-white hover:text-cyan-300 transition duration-300">Projets</a>
+                    <a href="#contact" class="nav-link relative text-white hover:text-cyan-300 transition duration-300">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="menu-btn" class="text-white focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+                <a href="#home" class="block py-2 text-white hover:text-cyan-300 transition duration-300">Accueil</a>
+                <a href="#about" class="block py-2 text-white hover:text-cyan-300 transition duration-300">À propos</a>
+                <a href="#skills" class="block py-2 text-white hover:text-cyan-300 transition duration-300">Compétences</a>
+                <a href="#projects" class="block py-2 text-white hover:text-cyan-300 transition duration-300">Projets</a>
+                <a href="#contact" class="block py-2 text-white hover:text-cyan-300 transition duration-300">Contact</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div class="container mx-auto px-2 sm:px-4 md:px-6 text-center">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl md:text-7xl font-bold mb-6 slide-in">
+                <span class="gradient-text tracking-wide">TOUHAMI BARKAT</span>
+            </h1>
+            <h2 class="text-lg sm:text-xl md:text-2xl md:text-4xl font-semibold mb-8 slide-in" style="animation-delay: 0.2s">
+                Développeur <span class="gradient-text">Full-Stack</span> Senior
+            </h2>
+            <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-12 text-gray-300 slide-in" style="animation-delay: 0.4s">
+                Création d'applications web et mobiles innovantes avec des technologies de pointe.
+            </p>
+            <div class="flex justify-center space-x-6 slide-in" style="animation-delay: 0.6s">
+                <a href="#projects" class="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-semibold hover:opacity-90 transition duration-300 glow-animation">
+                    Voir mes projets
+                </a>
+                <a href="#contact" class="px-8 py-3 border-2 border-cyan-400 rounded-full font-semibold hover:bg-cyan-400 hover:bg-opacity-10 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Me contacter">
+                    Me contacter
+                </a>
+                <a href="/cv_touhami.pdf" download class="px-8 py-3 border-2 border-pink-400 rounded-full font-semibold hover:bg-pink-400 hover:bg-opacity-10 transition duration-300 glow-animation focus:outline-none focus:ring-2 focus:ring-pink-400 ml-2" aria-label="Télécharger mon CV">
+                    <i class="fas fa-download mr-2"></i>Télécharger mon CV
+                </a>
+            </div>
+            <div class="mt-24 scroll-indicator slide-in" style="animation-delay: 0.8s">
+                <a href="#about" class="flex flex-col items-center text-cyan-400">
+                    <span class="mb-2">Explorer</span>
+                    <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parcours / Expérience Section -->
+    <section id="experience" class="py-20 bg-black bg-opacity-70 backdrop-filter backdrop-blur-sm">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-16 relative section-title inline-block">
+                Mon <span class="gradient-text">parcours</span>
+            </h2>
+            <div class="space-y-8">
+                <div class="flex flex-col md:flex-row md:items-center md:gap-8">
+                    <div class="md:w-1/4 font-semibold text-cyan-400">2023 - Présent</div>
+                    <div class="md:w-3/4">
+                        <h3 class="text-xl font-bold">Développeur Full-Stack chez StartupX</h3>
+                        <p class="text-gray-300">Développement d'applications web modernes avec React, Node.js et MongoDB. Mise en place de CI/CD, gestion de projets Agile.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row md:items-center md:gap-8">
+                    <div class="md:w-1/4 font-semibold text-cyan-400">2021 - 2023</div>
+                    <div class="md:w-3/4">
+                        <h3 class="text-xl font-bold">Développeur Frontend chez WebAgency</h3>
+                        <p class="text-gray-300">Création de sites vitrines et e-commerce. Intégration responsive, animations UI, optimisation des performances.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row md:items-center md:gap-8">
+                    <div class="md:w-1/4 font-semibold text-cyan-400">2018 - 2021</div>
+                    <div class="md:w-3/4">
+                        <h3 class="text-xl font-bold">Étudiant en Informatique</h3>
+                        <p class="text-gray-300">Licence Informatique, Université XYZ. Projets personnels, hackathons, apprentissage autodidacte.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-gray-900 bg-opacity-70 backdrop-filter backdrop-blur-sm">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-16 relative section-title inline-block">
+                Mes <span class="gradient-text">compétences</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Frontend Skills -->
+                <div class="gradient-border p-6 rounded-lg bg-gray-800 skill-card transition duration-500 hover:shadow-xl hover:shadow-cyan-500/20">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-cyan-900 bg-opacity-30 flex items-center justify-center mr-4 tech-icon">
+                            <i class="fas fa-laptop-code text-2xl gradient-text"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Frontend</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-cyan-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-react text-cyan-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">React.js</span>
+                                    <span class="text-sm text-cyan-400">95%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-cyan-400 h-1.5 rounded-full" style="width: 95%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-cyan-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-vuejs text-cyan-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Vue.js</span>
+                                    <span class="text-sm text-cyan-400">90%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-cyan-400 h-1.5 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-cyan-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-js text-cyan-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">JavaScript</span>
+                                    <span class="text-sm text-cyan-400">98%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-cyan-400 h-1.5 rounded-full" style="width: 98%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-cyan-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-css3-alt text-cyan-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">CSS/Tailwind</span>
+                                    <span class="text-sm text-cyan-400">97%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-cyan-400 h-1.5 rounded-full" style="width: 97%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backend Skills -->
+                <div class="gradient-border p-6 rounded-lg bg-gray-800 skill-card transition duration-500 hover:shadow-xl hover:shadow-purple-500/20">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-purple-900 bg-opacity-30 flex items-center justify-center mr-4 tech-icon">
+                            <i class="fas fa-server text-2xl gradient-text"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Backend</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-purple-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-node-js text-purple-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Node.js</span>
+                                    <span class="text-sm text-purple-400">96%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-purple-400 h-1.5 rounded-full" style="width: 96%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-purple-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-python text-purple-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Python/Django</span>
+                                    <span class="text-sm text-purple-400">85%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-purple-400 h-1.5 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-purple-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fas fa-database text-purple-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">MongoDB</span>
+                                    <span class="text-sm text-purple-400">92%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-purple-400 h-1.5 rounded-full" style="width: 92%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-purple-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fas fa-database text-purple-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">PostgreSQL</span>
+                                    <span class="text-sm text-purple-400">88%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-purple-400 h-1.5 rounded-full" style="width: 88%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile & DevOps -->
+                <div class="gradient-border p-6 rounded-lg bg-gray-800 skill-card transition duration-500 hover:shadow-xl hover:shadow-pink-500/20">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-pink-900 bg-opacity-30 flex items-center justify-center mr-4 tech-icon">
+                            <i class="fas fa-mobile-alt text-2xl gradient-text"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Mobile & DevOps</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-pink-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-android text-pink-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Flutter</span>
+                                    <span class="text-sm text-pink-400">94%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-pink-400 h-1.5 rounded-full" style="width: 94%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-pink-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-apple text-pink-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">React Native</span>
+                                    <span class="text-sm text-pink-400">90%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-pink-400 h-1.5 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-pink-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-docker text-pink-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Docker</span>
+                                    <span class="text-sm text-pink-400">89%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-pink-400 h-1.5 rounded-full" style="width: 89%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-pink-400 bg-opacity-20 flex items-center justify-center mr-3 tech-icon">
+                                <i class="fab fa-aws text-pink-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">AWS</span>
+                                    <span class="text-sm text-pink-400">87%</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                    <div class="bg-pink-400 h-1.5 rounded-full" style="width: 87%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 bg-black bg-opacity-70 backdrop-filter backdrop-blur-sm">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-16 relative section-title inline-block">
+                Mes <span class="gradient-text">projets</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="gradient-border rounded-lg overflow-hidden bg-gray-800 project-card transition duration-500">
+                    <div class="relative h-60 overflow-hidden project-inner">
+                        <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="E-commerce Website" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-80 project-overlay transition duration-500 opacity-0 flex flex-col justify-end p-6">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <a href="https://github.com/touhami/project1" target="_blank" rel="noopener" class="inline-flex items-center px-3 py-1 text-xs font-semibold border border-cyan-400 rounded-full hover:bg-cyan-400 hover:bg-opacity-10 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                                    <i class="fab fa-github mr-1"></i> Code
+                                </a>
+                                <span class="px-3 py-1 bg-cyan-400 bg-opacity-20 text-cyan-400 rounded-full text-xs">React</span>
+                                <span class="px-3 py-1 bg-cyan-400 bg-opacity-20 text-cyan-400 rounded-full text-xs">Node.js</span>
+                                <span class="px-3 py-1 bg-cyan-400 bg-opacity-20 text-cyan-400 rounded-full text-xs">MongoDB</span>
+                            </div>
+                            <a href="#" class="inline-flex items-center text-cyan-400 font-semibold">
+                                <span>Voir le projet</span>
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Plateforme E-commerce</h3>
+                        <p class="text-gray-300 mb-4">
+                            Développement d'une plateforme e-commerce complète avec authentification utilisateur, gestion de produits et panier d'achat.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <a href="#" class="text-sm text-cyan-400 hover:underline">Voir les détails</a>
+                            <div class="flex space-x-3">
+                                <a href="#" class="text-gray-400 hover:text-cyan-400 transition duration-300">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-cyan-400 transition duration-300">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="gradient-border rounded-lg overflow-hidden bg-gray-800 project-card transition duration-500">
+                    <div class="relative h-60 overflow-hidden project-inner">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Mobile Fitness App" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-80 project-overlay transition duration-500 opacity-0 flex flex-col justify-end p-6">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <a href="https://github.com/touhami/project1" target="_blank" rel="noopener" class="inline-flex items-center px-3 py-1 text-xs font-semibold border border-cyan-400 rounded-full hover:bg-cyan-400 hover:bg-opacity-10 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                                    <i class="fab fa-github mr-1"></i> Code
+                                </a>
+                                <span class="px-3 py-1 bg-purple-400 bg-opacity-20 text-purple-400 rounded-full text-xs">Flutter</span>
+                                <span class="px-3 py-1 bg-purple-400 bg-opacity-20 text-purple-400 rounded-full text-xs">Firebase</span>
+                                <span class="px-3 py-1 bg-purple-400 bg-opacity-20 text-purple-400 rounded-full text-xs">BLoC</span>
+                            </div>
+                            <a href="#" class="inline-flex items-center text-purple-400 font-semibold">
+                                <span>Voir le projet</span>
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Application Fitness</h3>
+                        <p class="text-gray-300 mb-4">
+                            Application mobile cross-platform pour le suivi des entraînements et de la nutrition avec synchronisation cloud.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <a href="#" class="text-sm text-purple-400 hover:underline">Voir les détails</a>
+                            <div class="flex space-x-3">
+                                <a href="#" class="text-gray-400 hover:text-purple-400 transition duration-300">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-purple-400 transition duration-300">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="gradient-border rounded-lg overflow-hidden bg-gray-800 project-card transition duration-500">
+                    <div class="relative h-60 overflow-hidden project-inner">
+                        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Portfolio Website" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-80 project-overlay transition duration-500 opacity-0 flex flex-col justify-end p-6">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <a href="https://github.com/touhami/project1" target="_blank" rel="noopener" class="inline-flex items-center px-3 py-1 text-xs font-semibold border border-cyan-400 rounded-full hover:bg-cyan-400 hover:bg-opacity-10 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                                    <i class="fab fa-github mr-1"></i> Code
+                                </a>
+                                <span class="px-3 py-1 bg-pink-400 bg-opacity-20 text-pink-400 rounded-full text-xs">Vue.js</span>
+                                <span class="px-3 py-1 bg-pink-400 bg-opacity-20 text-pink-400 rounded-full text-xs">SCSS</span>
+                                <span class="px-3 py-1 bg-pink-400 bg-opacity-20 text-pink-400 rounded-full text-xs">Three.js</span>
+                            </div>
+                            <a href="#" class="inline-flex items-center text-pink-400 font-semibold">
+                                <span>Voir le projet</span>
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Site Portfolio</h3>
+                        <p class="text-gray-300 mb-4">
+                            Conception et développement d'un portfolio personnel avec animations 3D et design moderne.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <a href="#" class="text-sm text-pink-400 hover:underline">Voir les détails</a>
+                            <div class="flex space-x-3">
+                                <a href="#" class="text-gray-400 hover:text-pink-400 transition duration-300">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-pink-400 transition duration-300">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16 text-center">
+                <a href="#" class="inline-flex items-center px-6 py-3 border border-cyan-400 rounded-full font-semibold hover:bg-cyan-400 hover:bg-opacity-10 transition duration-300 glow-animation">
+                    <span>Voir tous mes projets</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-900 bg-opacity-70 backdrop-filter backdrop-blur-sm">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-16 relative section-title inline-block">
+                Me <span class="gradient-text">contacter</span>
+            </h2>
+
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="lg:w-1/2">
+                    <h3 class="text-2xl font-semibold mb-6">Disponible pour de nouvelles opportunités</h3>
+                    <p class="text-gray-300 mb-8">
+                        Si vous avez un projet intéressant ou souhaitez discuter d'une opportunité de collaboration, n'hésitez pas à me contacter. Je serai ravi d'échanger avec vous.
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 rounded-full bg-cyan-400 bg-opacity-20 flex items-center justify-center mr-4 tech-icon">
+                                <i class="fas fa-map-marker-alt text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Adresse</h4>
+                                <p class="text-gray-300">Cité Alioua Fodil BT12 N4, Cheraga, Alger, ALGERIE</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 rounded-full bg-cyan-400 bg-opacity-20 flex items-center justify-center mr-4 tech-icon">
+                                <i class="fas fa-phone-alt text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Téléphone</h4>
+                                <a href="tel:+213557043495" class="text-gray-300 hover:text-cyan-400 transition duration-300">+213 557 043 495</a>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 rounded-full bg-cyan-400 bg-opacity-20 flex items-center justify-center mr-4 tech-icon">
+                                <i class="fas fa-envelope text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">Email</h4>
+                                <a href="mailto:contact@touhamibarkat.com" class="text-gray-300 hover:text-cyan-400 transition duration-300">contact@touhamibarkat.com</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10">
+                        <h4 class="font-semibold mb-4">Réseaux sociaux</h4>
+                        <div class="flex space-x-4">
+                            <a href="https://linkedin.com/in/touhami" target="_blank" rel="noopener" class="text-gray-500 hover:text-cyan-400 transition duration-300 tech-icon focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="LinkedIn Touhami">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://github.com/touhami" target="_blank" rel="noopener" class="text-gray-500 hover:text-cyan-400 transition duration-300 tech-icon focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="GitHub Touhami">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="#" class="text-gray-500 hover:text-cyan-400 transition duration-300 tech-icon">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="text-gray-500 hover:text-cyan-400 transition duration-300 tech-icon">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:w-1/2">
+                    <form class="gradient-border p-8 rounded-lg bg-gray-800" id="contact-form">
+                        <div id="form-feedback" class="hidden text-green-400 text-center mb-4"></div>
+                        <div class="mb-6">
+                            <label for="name" class="block mb-2 text-sm font-medium">Votre nom</label>
+                            <input type="text" id="name" class="w-full px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-300" placeholder="Entrez votre nom">
+                        </div>
+                        <div class="mb-6">
+                            <label for="email" class="block mb-2 text-sm font-medium">Votre email</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-300" placeholder="Entrez votre email">
+                        </div>
+                        <div class="mb-6">
+                            <label for="subject" class="block mb-2 text-sm font-medium">Sujet</label>
+                            <input type="text" id="subject" class="w-full px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-300" placeholder="Quel est le sujet de votre message ?">
+                        </div>
+                        <div class="mb-6">
+                            <label for="message" class="block mb-2 text-sm font-medium">Votre message</label>
+                            <textarea id="message" rows="5" class="w-full px-4 py-3 rounded-lg border border-gray-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition duration-300" placeholder="Décrivez votre projet ou votre demande..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold hover:opacity-90 transition duration-300 glow-animation focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Envoyer le message">
+                            Envoyer le message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-black bg-opacity-90">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <a href="#" class="text-2xl font-bold gradient-text tracking-wider">TOUHAMI BARKAT</a>
+                    <p class="text-gray-400 mt-2">Développeur Full-Stack Senior</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#home" class="text-gray-400 hover:text-cyan-400 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Accueil">Accueil</a>
+                    <a href="#about" class="text-gray-400 hover:text-cyan-400 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="À propos">À propos</a>
+                    <a href="#skills" class="text-gray-400 hover:text-cyan-400 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Compétences">Compétences</a>
+                    <a href="#projects" class="text-gray-400 hover:text-cyan-400 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Projets">Projets</a>
+                    <a href="#contact" class="text-gray-400 hover:text-cyan-400 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="Contact">Contact</a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0"> 2023 TOUHAMI BARKAT. Tous droits réservés.</p>
+                <div class="flex space-x-4">
+                    <a href="https://linkedin.com/in/touhami" target="_blank" rel="noopener" class="text-gray-500 hover:text-cyan-400 transition duration-300 tech-icon focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="LinkedIn Touhami">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/touhami" target="_blank" rel="noopener" class="text-gray-500 hover:text-cyan-400 transition duration-300 tech-icon focus:outline-none focus:ring-2 focus:ring-cyan-400" aria-label="GitHub Touhami">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-cyan-400 transition duration-300 tech-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-cyan-400 transition duration-300 tech-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll doux pour la navigation
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        // Feedback formulaire contact
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                document.getElementById('form-feedback').textContent = 'Merci pour votre message ! Je vous répondrai rapidement.';
+                document.getElementById('form-feedback').classList.remove('hidden');
+                contactForm.reset();
+            });
+        }
+
+        // Réduction des animations si l'utilisateur le souhaite
+        if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.querySelectorAll('.glow-animation, .pulse-animation, .slide-in').forEach(el => {
+                el.style.animation = 'none';
+            });
+        }
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Close mobile menu if open
+                mobileMenu.classList.add('hidden');
+            });
+        });
+        
+        // Vanta.js background animation
+        VANTA.NET({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x00f0ff,
+            backgroundColor: 0x0a0a14,
+            points: 12.00,
+            maxDistance: 22.00,
+            spacing: 16.00
+        });
+        
+        // Add shadow to navbar on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg');
+            } else {
+                nav.classList.remove('shadow-lg');
+            }
+        });
+        
+        // Form submission
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Merci pour votre message! Je vous répondrai dès que possible.');
+            form.reset();
+        });
+
+        // Animate tech icons on hover
+        const techIcons = document.querySelectorAll('.tech-icon');
+        techIcons.forEach(icon => {
+            icon.addEventListener('mouseenter', () => {
+                icon.classList.add('animate-pulse');
+            });
+            icon.addEventListener('mouseleave', () => {
+                icon.classList.remove('animate-pulse');
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fadeIn');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.skill-card, .project-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
